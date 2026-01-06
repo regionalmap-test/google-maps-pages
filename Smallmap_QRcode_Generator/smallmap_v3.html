@@ -1,21 +1,37 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
   <meta charset="utf-8">
   <title>Small Area Map</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <style>
-    body { margin: 0; font-family: sans-serif; }
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* パスワード画面 */
     #passwordDiv {
       position: fixed;
       top: 0; left: 0; right: 0; bottom: 0;
       background: rgba(255,255,255,0.95);
       display: flex;
-      flex-direction: column;
       align-items: center;
       justify-content: center;
+      flex-direction: column;
+      z-index: 1000;
       padding: 20px;
+      box-sizing: border-box;
     }
+
+    #passwordDiv h2 {
+      font-size: 1.5em;
+      margin-bottom: 1em;
+    }
+
     #passwordInput {
       width: 90%;
       max-width: 400px;
@@ -25,6 +41,7 @@
       border: 1px solid #aaa;
       box-sizing: border-box;
     }
+
     #submitBtn {
       width: 90%;
       max-width: 400px;
@@ -35,43 +52,80 @@
       border: none;
       background: #4285F4;
       color: white;
+      box-sizing: border-box;
     }
+
     #msg {
       margin-top: 0.6em;
       color: red;
       font-size: 1.1em;
     }
+
+    /* 地図表示エリア */
+    #mapContainer {
+      display: none;
+      width: 100vw;
+      height: 100vh;
+    }
+
+    #mapFrame {
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
   </style>
 </head>
+
 <body>
 
-<div id="passwordDiv">
-  <h2>パスワードを入力してください</h2>
-  <input type="password" id="passwordInput" placeholder="パスワード">
-  <button id="submitBtn">表示</button>
-  <p id="msg"></p>
-</div>
+  <!-- パスワード画面 -->
+  <div id="passwordDiv">
+    <h2>パスワードを入力してください</h2>
+    <input type="password" id="passwordInput" placeholder="パスワード">
+    <button id="submitBtn">表示</button>
+    <p id="msg"></p>
+  </div>
 
-<script>
-  const correctPassword = "1914";
-  const submitBtn = document.getElementById("submitBtn");
-  const passwordInput = document.getElementById("passwordInput");
-  const msg = document.getElementById("msg");
+  <!-- My Maps iframe -->
+  <div id="mapContainer">
+    <iframe
+      id="mapFrame"
+      loading="lazy"
+      referrerpolicy="no-referrer-when-downgrade">
+    </iframe>
+  </div>
 
-  submitBtn.onclick = function() {
-    if (passwordInput.value === correctPassword) {
-      const params = new URLSearchParams(window.location.search);
-      const mid = params.get("mid");
-      if (!mid) {
-        msg.textContent = "mid が指定されていません";
+  <script>
+    const correctPassword = "1914";
+
+    const submitBtn = document.getElementById("submitBtn");
+    const passwordInput = document.getElementById("passwordInput");
+    const passwordDiv = document.getElementById("passwordDiv");
+    const msg = document.getElementById("msg");
+    const mapContainer = document.getElementById("mapContainer");
+    const mapFrame = document.getElementById("mapFrame");
+
+    submitBtn.onclick = function () {
+      if (passwordInput.value !== correctPassword) {
+        msg.textContent = "パスワードが違います。";
         return;
       }
-      location.href = "https://www.google.com/maps/d/viewer?mid=" + mid;
-    } else {
-      msg.textContent = "パスワードが違います";
-    }
-  };
-</script>
+
+      const params = new URLSearchParams(window.location.search);
+      const mid = params.get("mid");
+
+      if (!mid) {
+        msg.textContent = "地図IDが指定されていません。";
+        return;
+      }
+
+      // My Maps を iframe 用 URL で読み込み（←超重要）
+      mapFrame.src = "https://www.google.com/maps/d/embed?mid=" + encodeURIComponent(mid);
+
+      passwordDiv.style.display = "none";
+      mapContainer.style.display = "block";
+    };
+  </script>
 
 </body>
 </html>
