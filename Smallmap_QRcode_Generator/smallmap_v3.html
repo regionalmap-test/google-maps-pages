@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>Small Area Map</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { margin: 0; font-family: sans-serif; }
+    #passwordDiv {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(255,255,255,0.95);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    #passwordInput {
+      width: 90%;
+      max-width: 400px;
+      padding: 1em;
+      font-size: 1.2em;
+      border-radius: 8px;
+      border: 1px solid #aaa;
+      box-sizing: border-box;
+    }
+    #submitBtn {
+      width: 90%;
+      max-width: 400px;
+      padding: 1em;
+      font-size: 1.2em;
+      margin-top: 0.8em;
+      border-radius: 8px;
+      border: none;
+      background: #4285F4;
+      color: white;
+    }
+    #msg {
+      margin-top: 0.6em;
+      color: red;
+      font-size: 1.1em;
+    }
+  </style>
+</head>
+<body>
+
+<div id="passwordDiv">
+  <h2>パスワードを入力してください</h2>
+  <input type="password" id="passwordInput" placeholder="パスワード">
+  <button id="submitBtn">表示</button>
+  <p id="msg"></p>
+</div>
+
+<script>
+  const correctPassword = "1914";
+  const submitBtn = document.getElementById("submitBtn");
+  const passwordInput = document.getElementById("passwordInput");
+  const msg = document.getElementById("msg");
+
+  submitBtn.onclick = function() {
+    if (passwordInput.value === correctPassword) {
+      const params = new URLSearchParams(window.location.search);
+      const mid = params.get("mid");
+      if (!mid) {
+        msg.textContent = "mid が指定されていません";
+        return;
+      }
+      location.href = "https://www.google.com/maps/d/viewer?mid=" + mid;
+    } else {
+      msg.textContent = "パスワードが違います";
+    }
+  };
+</script>
+
+</body>
+</html>
